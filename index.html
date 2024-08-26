@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do List</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .todo-container {
+        max-width: 500px;
+        margin: 50px auto;
+      }
+      .todo-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .todo-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #fff;
+        margin-bottom: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+      .todo-item.completed .todo-text {
+        text-decoration: line-through;
+        color: #6c757d;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="todo-container">
+      <h1 class="todo-header">To-Do List</h1>
+      <div class="input-group mb-3">
+        <input
+          type="text"
+          id="todo-input"
+          class="form-control"
+          placeholder="Add a new task"
+        />
+        <button class="btn btn-warning" id="add-todo">Add</button>
+      </div>
+      <ul id="todo-list" class="list-group"></ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const todoInput = document.getElementById("todo-input");
+      const todoList = document.getElementById("todo-list");
+      const addTodoButton = document.getElementById("add-todo");
+
+      function addTodo() {
+        const todoText = todoInput.value.trim();
+        if (todoText !== "") {
+          const todoItem = document.createElement("li");
+          todoItem.className = "todo-item list-group-item";
+          todoItem.innerHTML = `
+          <span class="todo-text">${todoText}</span>
+          <div>
+            <button class="btn btn-sm btn-success complete-btn">Complete</button>
+             <button class="btn btn-sm btn-info edit-btn">Edit</button>
+            <button class="btn btn-sm btn-danger delete-btn">Delete</button>
+
+          </div>
+        `;
+          todoList.appendChild(todoItem);
+
+          todoInput.value = "";
+
+          todoItem
+            .querySelector(".complete-btn")
+            .addEventListener("click", () => {
+              todoItem.classList.toggle("completed");
+            });
+
+          todoItem
+            .querySelector(".delete-btn")
+            .addEventListener("click", () => {
+              todoItem.remove();
+            });
+
+          todoItem.querySelector(".edit-btn").addEventListener("click", () => {
+            const todoTextElement = todoItem.querySelector(".todo-text");
+            const currentText = todoTextElement.textContent;
+
+            todoTextElement.innerHTML = `
+              <input type="text" class="form-control edit-input" value="${currentText}" />
+            `;
+
+            const editInput = todoItem.querySelector(".edit-input");
+
+            editInput.focus();
+
+            editInput.addEventListener("blur", () => {
+              saveEditedTodo();
+            });
+            editInput.addEventListener("keypress", (e) => {
+              if (e.key === "Enter") {
+                saveEditedTodo();
+              }
+            });
+
+            function saveEditedTodo() {
+              const updatedText = editInput.value.trim();
+              if (updatedText !== "") {
+                todoTextElement.textContent = updatedText;
+              } else {
+                todoTextElement.textContent = currentText;
+              }
+            }
+          });
+        }
+      }
+
+      addTodoButton.addEventListener("click", addTodo);
+
+      todoInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          addTodo();
+        }
+      });
+    </script>
+  </body>
+</html>
